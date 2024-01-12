@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DVD Screensaver</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: black;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById("canvas");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const ctx = canvas.getContext("2d");
+
+        const logo = new Image();
+        logo.src = "idan_logo.png"; // Replace with your image file path
+
+        logo.onload = () => {
+            let logoX = canvas.width / 2 - logo.width / 4;
+            let logoY = canvas.height / 2 - logo.height / 4;
+            let speedX = 2;
+            let speedY = 2;
+
+            const overlayCanvas = document.createElement("canvas");
+            overlayCanvas.width = logo.width / 2; // Set to logo width
+            overlayCanvas.height = logo.height / 2; // Set to logo height
+            const overlayCtx = overlayCanvas.getContext("2d");
+
+            function changeOverlayColor() {
+                // Generate a random color in RGBA format
+                const r = Math.floor(Math.random() * 256);
+                const g = Math.floor(Math.random() * 256);
+                const b = Math.floor(Math.random() * 256);
+                const a = 0.5; // Set alpha (transparency)
+                overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+                overlayCtx.fillStyle = `rgba(${r}, ${g}, ${b}, ${a})`;
+                overlayCtx.fillRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // Move the image
+                logoX += speedX;
+                logoY += speedY;
+
+                // Bounce off the edges and change overlay color
+                if (logoX < 0 || logoX + logo.width / 2 > canvas.width) {
+                    speedX = -speedX;
+                    changeOverlayColor();
+                }
+                if (logoY < 0 || logoY + logo.height / 2 > canvas.height) {
+                    speedY = -speedY;
+                    changeOverlayColor();
+                }
+
+                // Draw the overlay and logo on the main canvas
+                ctx.drawImage(overlayCanvas, logoX, logoY);
+                ctx.drawImage(logo, logoX, logoY, logo.width / 2, logo.height / 2);
+
+                requestAnimationFrame(draw);
+            }
+
+            draw();
+        };
+    </script>
+</body>
+</html>
